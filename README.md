@@ -1,7 +1,5 @@
 # NetExec Cheatsheet
 
-[[_TOC_]]
-
 A quick and dirty cheatsheet on the usage of [NetExec](https://github.com/Pennyw0rth/NetExec), without lots of explications, only commands. The purpose of this page is to provide the basic commands for the essential operations during an internal pentest.
 
 If you need more detailed documentation, please refer to the [**official NetExec wiki**](https://www.netexec.wiki/).
